@@ -1,25 +1,44 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState, useEffect } from 'react'
+import CardList from './components/card-list/card-list';
+import SearchBox from './components/search-box/search-box';
 
-function App() {
+const App = () => {
+  console.log('object');
+  const [monsters, setMonsters] = useState([])
+  const [initialMonsters, setInitialMonsters] = useState([])
+  const [title, setTitle] = useState("")
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => res.json())
+      .then(users => {
+        setMonsters(users)
+        setInitialMonsters(users)
+      })
+  }, [])
+
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase()
+    const filteredArr = initialMonsters.filter(monster => monster.name.toLowerCase().includes(query))
+    setMonsters(filteredArr)
+  }
+
+  const handleTitle = (event) => {
+    setTitle(event.target.value);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>{title}</h1>
+      <h1 className='app-title'>Monsters Rolodex ({monsters.length})</h1>
+      <SearchBox handleSearch={handleSearch} placeholder="Search Monsters" className="monsters-search-box" />
+      <SearchBox handleSearch={handleTitle} placeholder="Title Monsters" className="title-search-box" />
+      <br />
+      <CardList monsters={monsters} />
     </div>
-  );
+  )
 }
 
 export default App;
